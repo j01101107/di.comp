@@ -1,5 +1,7 @@
 ﻿
 
+using System.Collections;
+
 using Castle.Common;
 using Castle.DynamicProxy;
 using Castle.MicroKernel.Registration;
@@ -29,5 +31,21 @@ public class NotificationNamedTests : TestBase
     {
         var service = IoC.Resolve<ISystemOperation>();
         service.DoSystemOperation("Test");
+    }
+
+    private static IEnumerable NotificationTestCases
+    {
+        get
+        {
+            yield return new TestCaseData("email");
+            yield return new TestCaseData("sms");
+        }
+    }
+
+    [TestCaseSource(nameof(NotificationTestCases))]
+    public void CallByName(string name)
+    {
+        var service = IoC.Resolve<INotificationService>(name);
+        service.Notify($"Test-{name}");
     }
 }
